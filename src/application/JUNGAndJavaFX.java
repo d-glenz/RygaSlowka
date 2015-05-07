@@ -2,10 +2,13 @@ package application;
 
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -32,9 +35,25 @@ public class JUNGAndJavaFX extends Application {
 	@Override
 	public void start(Stage stage) {
 		// setup up the scene.
-		Group root = new Group();
-		Scene scene = new Scene(root, 800, 400, Color.WHITE);
+		
+		BorderPane rootLayout = null;
 
+		MyController controller = new MyController();
+		FXMLLoader fxmlLoader = new FXMLLoader();
+		fxmlLoader.setController(controller);
+		try {
+			fxmlLoader.setLocation(getClass().getResource("/RootLayout.fxml"));
+			rootLayout = (BorderPane) fxmlLoader.load();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		Scene scene = new Scene(rootLayout, 800, 400, Color.WHITE);
+		stage.setMaximized(true);
+		stage.setScene(scene);
+		stage.show();
+		
+		
 		// create two groups, one for each visualization
 		Group viz1 = new Group();
 		Group viz2 = new Group();
@@ -71,8 +90,8 @@ public class JUNGAndJavaFX extends Application {
 		// move the second viz to beside the first.
 		viz2.translateXProperty().set(400);
 
-		root.getChildren().add(viz1);
-		root.getChildren().add(viz2);
+		rootLayout.getChildren().add(viz1);
+		rootLayout.getChildren().add(viz2);
 
 		stage.setTitle("Displaying Two JUNG Graphs");
 		stage.setScene(scene);
@@ -134,7 +153,7 @@ public class JUNGAndJavaFX extends Application {
 	 * @param args
 	 *            the command line arguments
 	 */
-	public static void main(String[] args) {
-		launch(args);
-	}
+	// public static void main(String[] args) {
+	// launch(args);
+	// }
 }
