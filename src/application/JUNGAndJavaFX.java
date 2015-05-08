@@ -14,8 +14,11 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
+import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
+import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.graph.util.TestGraphs;
@@ -32,10 +35,10 @@ public class JUNGAndJavaFX extends Application {
 
 	private static final int CIRCLE_SIZE = 15; // default circle size
 
+	private Graph<String, Number> graph1;
+
 	@Override
 	public void start(Stage stage) {
-		// setup up the scene.
-		
 		BorderPane rootLayout = null;
 
 		MyController controller = new MyController();
@@ -52,55 +55,68 @@ public class JUNGAndJavaFX extends Application {
 		stage.setMaximized(true);
 		stage.setScene(scene);
 		stage.show();
-		
-		
-		// create two groups, one for each visualization
+
+		// create a group for the visualization
 		Group viz1 = new Group();
-		Group viz2 = new Group();
 
-		// create a sample graph using JUNG's TestGraphs class.
-		Graph<String, Number> graph1 = TestGraphs.getOneComponentGraph();
-
-		// define the layout we want to use for the graph
-		// The layout will be modified by the VisualizationModel
-		Layout<String, Number> circleLayout = new CircleLayout<String, Number>(
-				graph1);
-
-		/*
-		 * Define the visualization model. This is how JUNG calculates the
-		 * layout for the graph. It updates the layout object passed in.
-		 */
-		new DefaultVisualizationModel<>(circleLayout, new Dimension(400, 400));
+		Layout<String, Number> circleLayout = doJungStuff(LayoutType.ISOM);
 
 		// draw the graph
+
 		renderGraph(graph1, circleLayout, viz1);
 
-		// Generate a second JUNG sample graph
-		Graph<String, Number> graph2 = TestGraphs.getOneComponentGraph();
-
-		// This time use an Isometric layout.
-		Layout<String, Number> lay2 = new ISOMLayout<>(graph2);
-
-		// Generate the actual layout
-		new DefaultVisualizationModel<>(lay2, new Dimension(400, 400));
-
-		// draw the graph
-		renderGraph(graph2, lay2, viz2);
-
-		// move the second viz to beside the first.
-		viz2.translateXProperty().set(400);
-
 		rootLayout.getChildren().add(viz1);
-		rootLayout.getChildren().add(viz2);
 
-		stage.setTitle("Displaying Two JUNG Graphs");
+		stage.setTitle("Displaying One JUNG Graph");
 		stage.setScene(scene);
 		stage.show();
 
 	}
 
+	enum LayoutType {
+		FR, ISOM, KK, CIRCLE, SPRING
+	}
+
+	private Layout<String, Number> doJungStuff(LayoutType lt) {
+		// create a sample graph using JUNG's TestGraphs class.
+		this.graph1 = TestGraphs.getOneComponentGraph();
+
+		// define the layout we want to use for the graph
+		// The layout will be modified by the VisualizationModel
+		Layout<String, Number> layout;
+
+		switch (lt) {
+		case FR:
+			layout = new FRLayout<String, Number>(graph1);
+			break;
+		case ISOM:
+			layout = new ISOMLayout<String, Number>(graph1);
+			break;
+		case KK:
+			layout = new KKLayout<String, Number>(graph1);
+			break;
+		case SPRING:
+			layout = new SpringLayout<String, Number>(graph1);
+			break;
+		default:
+			layout = new CircleLayout<String, Number>(graph1);
+			break;
+		}
+
+		// = new AggregateLayout<String, Number>(
+		// graph1);
+
+		// Define the visualization model. This is how JUNG calculates the
+		// layout for the graph. It updates the layout object passed in.
+		new DefaultVisualizationModel<>(layout, new Dimension(400, 400));
+
+		return layout;
+	}
+
 	/**
 	 * Render a graph to a particular Group
+	 * 
+	 * This is purely JAVAFX Stuff
 	 * 
 	 * @param graph
 	 * @param layout
