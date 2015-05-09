@@ -3,15 +3,22 @@ package application;
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
@@ -36,6 +43,8 @@ public class JUNGAndJavaFX extends Application {
 	private static final int CIRCLE_SIZE = 15; // default circle size
 
 	private Graph<String, Number> graph1;
+	Layout<String, Number> circleLayout;
+	Group viz1;
 
 	@Override
 	public void start(Stage stage) {
@@ -57,9 +66,9 @@ public class JUNGAndJavaFX extends Application {
 		stage.show();
 
 		// create a group for the visualization
-		Group viz1 = new Group();
+		viz1 = new Group();
 
-		Layout<String, Number> circleLayout = doJungStuff(LayoutType.ISOM);
+		circleLayout = doJungStuff(LayoutType.ISOM);
 
 		// draw the graph
 
@@ -112,6 +121,8 @@ public class JUNGAndJavaFX extends Application {
 
 		return layout;
 	}
+	
+	private double dragDeltaX, dragDeltaY; 
 
 	/**
 	 * Render a graph to a particular Group
@@ -130,11 +141,54 @@ public class JUNGAndJavaFX extends Application {
 			Point2D p = (Point2D) layout.transform(v);
 
 			// draw the vertex as a circle
-			Circle circle = new Circle();
+			final Circle circle = new Circle();
 			circle.setCenterX(p.getX());
 			circle.setCenterY(p.getY());
 			circle.setRadius(CIRCLE_SIZE);
-
+			
+//			final Polygon poly = new Polygon( 10, 10, 100, 10, 200, 100, 50, 200 );
+//			final AtomicInteger polyCoordinateIndex = new AtomicInteger( 0);
+//			circle.centerXProperty().addListener( new ChangeListener<Number>() {
+//		        @Override
+//		        public void changed( ObservableValue<? extends Number> observable, Number oldValue, Number newValue ) {
+//		          poly.getPoints().set( polyCoordinateIndex.get(), newValue.doubleValue() );
+//		        }
+//		      } );
+//		      circle.centerYProperty().addListener( new ChangeListener<Number>() {
+//		        @Override
+//		        public void changed( ObservableValue<? extends Number> observable, Number oldValue, Number newValue ) {
+//		          poly.getPoints().set( polyCoordinateIndex.get() + 1, (Double) newValue );
+//		        }
+//		      } );
+//			
+//		      circle.setOnMousePressed( new EventHandler<MouseEvent>() {
+//		          @Override public void handle( MouseEvent mouseEvent ) {
+//		            dragDeltaX = circle.getCenterX() - mouseEvent.getSceneX();
+//		            dragDeltaY = circle.getCenterY() - mouseEvent.getSceneY();
+//		          }
+//		        } );
+//
+//		        circle.setOnMouseDragged( new EventHandler<MouseEvent>() {
+//		          @Override public void handle( MouseEvent mouseEvent ) {
+//		            circle.setCenterX( mouseEvent.getSceneX() + dragDeltaX );
+//		            circle.setCenterY( mouseEvent.getSceneY() + dragDeltaY );
+//		            renderGraph(graph1,circleLayout,viz1);
+//		            circle.setCursor( Cursor.MOVE );
+//		          }
+//		        } );
+//
+//		        circle.setOnMouseEntered( new EventHandler<MouseEvent>() {
+//		          @Override public void handle( MouseEvent mouseEvent ) {
+//		            circle.setCursor( Cursor.HAND );
+//		          }
+//		        } );
+//
+//		        circle.setOnMouseReleased( new EventHandler<MouseEvent>() {
+//		          @Override public void handle( MouseEvent mouseEvent ) {
+//		            circle.setCursor( Cursor.HAND );
+//		          }
+//		        } );
+		      
 			// add it to the group, so it is shown on screen
 			viz.getChildren().add(circle);
 		}
