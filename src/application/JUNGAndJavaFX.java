@@ -3,22 +3,15 @@ package application;
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
@@ -45,7 +38,7 @@ public class JUNGAndJavaFX extends Application {
 	private Graph<String, Number> graph1;
 	Layout<String, Number> circleLayout;
 	Group viz1;
-
+	
 	@Override
 	public void start(Stage stage) {
 		BorderPane rootLayout = null;
@@ -215,15 +208,11 @@ public class JUNGAndJavaFX extends Application {
 	}
 
 	/**
-	 * The main() method is ignored in correctly deployed JavaFX application.
-	 * main() serves only as fallback in case the application can not be
-	 * launched through deployment artifacts, e.g., in IDEs with limited FX
-	 * support. NetBeans ignores main().
-	 *
+	 * Fallback to start FX application 
 	 * @param args
 	 *            the command line arguments
 	 */
-	// public static void main(String[] args) {
-	// launch(args);
-	// }
+	public static void main(String[] args) {
+		launch(args);
+	}
 }
