@@ -47,7 +47,7 @@ public class JUNGAndJavaFX extends Application {
 	private Graph<Circle, Line> graph1;
 	Layout<String, Number> circleLayout;
 	Group viz1;
-
+	
 	@Override
 	public void start(Stage stage) {
 		BorderPane rootLayout = null;
@@ -279,15 +279,11 @@ public class JUNGAndJavaFX extends Application {
 	}
 
 	/**
-	 * The main() method is ignored in correctly deployed JavaFX application.
-	 * main() serves only as fallback in case the application can not be
-	 * launched through deployment artifacts, e.g., in IDEs with limited FX
-	 * support. NetBeans ignores main().
-	 *
+	 * Fallback to start FX application 
 	 * @param args
 	 *            the command line arguments
 	 */
-	// public static void main(String[] args) {
-	// launch(args);
-	// }
+	public static void main(String[] args) {
+		launch(args);
+	}
 }
