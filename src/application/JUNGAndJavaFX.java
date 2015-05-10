@@ -3,22 +3,22 @@ package application;
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.HashMap;
+import java.util.Map;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Polygon;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextBoundsType;
 import javafx.stage.Stage;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
@@ -27,9 +27,11 @@ import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.UndirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.graph.util.TestGraphs;
 import edu.uci.ics.jung.visualization.DefaultVisualizationModel;
+import edu.uci.ics.jung.visualization.VisualizationModel;
 
 /**
  * A sample showing how to use JUNG's layout classes to position vertices in a
@@ -42,7 +44,7 @@ public class JUNGAndJavaFX extends Application {
 
 	private static final int CIRCLE_SIZE = 15; // default circle size
 
-	private Graph<String, Number> graph1;
+	private Graph<Circle, Line> graph1;
 	Layout<String, Number> circleLayout;
 	Group viz1;
 
@@ -50,9 +52,7 @@ public class JUNGAndJavaFX extends Application {
 	public void start(Stage stage) {
 		BorderPane rootLayout = null;
 
-		MyController controller = new MyController();
 		FXMLLoader fxmlLoader = new FXMLLoader();
-		fxmlLoader.setController(controller);
 		try {
 			fxmlLoader.setLocation(getClass().getResource("/RootLayout.fxml"));
 			rootLayout = (BorderPane) fxmlLoader.load();
@@ -72,7 +72,7 @@ public class JUNGAndJavaFX extends Application {
 
 		// draw the graph
 
-		renderGraph(graph1, circleLayout, viz1);
+		drawGraph(graph1, viz1);
 
 		rootLayout.getChildren().add(viz1);
 
@@ -88,7 +88,8 @@ public class JUNGAndJavaFX extends Application {
 
 	private Layout<String, Number> doJungStuff(LayoutType lt) {
 		// create a sample graph using JUNG's TestGraphs class.
-		this.graph1 = TestGraphs.getOneComponentGraph();
+
+		Graph<String, Number> temp = TestGraphs.getOneComponentGraph();
 
 		// define the layout we want to use for the graph
 		// The layout will be modified by the VisualizationModel
@@ -96,21 +97,23 @@ public class JUNGAndJavaFX extends Application {
 
 		switch (lt) {
 		case FR:
-			layout = new FRLayout<String, Number>(graph1);
+			layout = new FRLayout<String, Number>(temp);
 			break;
 		case ISOM:
-			layout = new ISOMLayout<String, Number>(graph1);
+			layout = new ISOMLayout<String, Number>(temp);
 			break;
 		case KK:
-			layout = new KKLayout<String, Number>(graph1);
+			layout = new KKLayout<String, Number>(temp);
 			break;
 		case SPRING:
-			layout = new SpringLayout<String, Number>(graph1);
+			layout = new SpringLayout<String, Number>(temp);
 			break;
 		default:
-			layout = new CircleLayout<String, Number>(graph1);
+			layout = new CircleLayout<String, Number>(temp);
 			break;
 		}
+
+		this.graph1 = convertGraph(TestGraphs.getOneComponentGraph(), layout);
 
 		// = new AggregateLayout<String, Number>(
 		// graph1);
@@ -121,97 +124,158 @@ public class JUNGAndJavaFX extends Application {
 
 		return layout;
 	}
-	
-	private double dragDeltaX, dragDeltaY; 
 
 	/**
 	 * Render a graph to a particular Group
 	 * 
 	 * This is purely JAVAFX Stuff
 	 * 
-	 * @param graph
-	 * @param layout
+	 * @param graph12
+	 * @param circleLayout2
 	 * @param viz
 	 */
-	private void renderGraph(Graph<String, Number> graph,
-			Layout<String, Number> layout, Group viz) {
-		// draw the vertices in the graph
-		for (String v : graph.getVertices()) {
-			// Get the position of the vertex
-			Point2D p = (Point2D) layout.transform(v);
+	public void drawGraph(Graph<Circle, Line> graph, Group group) {
+		for (Circle c : graph.getVertices()) {
+			if (!group.getChildren().contains(c)) {
+				group.getChildren().add(c);
+			}
 
-			// draw the vertex as a circle
-			final Circle circle = new Circle();
-			circle.setCenterX(p.getX());
-			circle.setCenterY(p.getY());
-			circle.setRadius(CIRCLE_SIZE);
-			
-//			final Polygon poly = new Polygon( 10, 10, 100, 10, 200, 100, 50, 200 );
-//			final AtomicInteger polyCoordinateIndex = new AtomicInteger( 0);
-//			circle.centerXProperty().addListener( new ChangeListener<Number>() {
-//		        @Override
-//		        public void changed( ObservableValue<? extends Number> observable, Number oldValue, Number newValue ) {
-//		          poly.getPoints().set( polyCoordinateIndex.get(), newValue.doubleValue() );
-//		        }
-//		      } );
-//		      circle.centerYProperty().addListener( new ChangeListener<Number>() {
-//		        @Override
-//		        public void changed( ObservableValue<? extends Number> observable, Number oldValue, Number newValue ) {
-//		          poly.getPoints().set( polyCoordinateIndex.get() + 1, (Double) newValue );
-//		        }
-//		      } );
-//			
-//		      circle.setOnMousePressed( new EventHandler<MouseEvent>() {
-//		          @Override public void handle( MouseEvent mouseEvent ) {
-//		            dragDeltaX = circle.getCenterX() - mouseEvent.getSceneX();
-//		            dragDeltaY = circle.getCenterY() - mouseEvent.getSceneY();
-//		          }
-//		        } );
-//
-//		        circle.setOnMouseDragged( new EventHandler<MouseEvent>() {
-//		          @Override public void handle( MouseEvent mouseEvent ) {
-//		            circle.setCenterX( mouseEvent.getSceneX() + dragDeltaX );
-//		            circle.setCenterY( mouseEvent.getSceneY() + dragDeltaY );
-//		            renderGraph(graph1,circleLayout,viz1);
-//		            circle.setCursor( Cursor.MOVE );
-//		          }
-//		        } );
-//
-//		        circle.setOnMouseEntered( new EventHandler<MouseEvent>() {
-//		          @Override public void handle( MouseEvent mouseEvent ) {
-//		            circle.setCursor( Cursor.HAND );
-//		          }
-//		        } );
-//
-//		        circle.setOnMouseReleased( new EventHandler<MouseEvent>() {
-//		          @Override public void handle( MouseEvent mouseEvent ) {
-//		            circle.setCursor( Cursor.HAND );
-//		          }
-//		        } );
-		      
-			// add it to the group, so it is shown on screen
-			viz.getChildren().add(circle);
 		}
 
-		// draw the edges
+		for (Line l : graph.getEdges()) {
+			if (!group.getChildren().contains(l)) {
+				group.getChildren().add(l);
+			}
+
+		}
+	}
+
+	/**
+	 * Converts String and Number graph to Circle and Line graph.
+	 * 
+	 * @param graph
+	 *            to layout
+	 * @param layout
+	 *            to position nodes
+	 * @return Circle, Line graph with the given layout
+	 * 
+	 * @author
+	 */
+	public UndirectedSparseMultigraph<Circle, Line> convertGraph(
+			Graph<String, Number> graph, Layout<String, Number> layout) {
+		// look up the circle object used for the string vertex
+		Map<String, Circle> toCircle = new HashMap<>();
+
+		// look up the line object used for the number edge
+		Map<Number, Line> toLine = new HashMap<>();
+
+		// new graph with JavaFX objects in it.
+		UndirectedSparseMultigraph<Circle, Line> undirectGraph = new UndirectedSparseMultigraph<>();
+
+		// Do the layout to get coords for the circles.
+		@SuppressWarnings("unused")
+		VisualizationModel<String, Number> vm1 = new DefaultVisualizationModel<>(
+				layout, new Dimension(400, 400));
+
+		// Draw the edges from graph 1
 		for (Number n : graph.getEdges()) {
-			// get the end points of the edge
+			// get the endpoint verts
 			Pair<String> endpoints = graph.getEndpoints(n);
 
-			// Get the end points as Point2D objects so we can use them in the
-			// builder
-			Point2D pStart = (Point2D) layout.transform(endpoints.getFirst());
-			Point2D pEnd = (Point2D) layout.transform(endpoints.getSecond());
+			// create the circles
+			Circle first = null;
+			Circle second = null;
 
-			// Draw the line
+			if (!toCircle.containsKey(endpoints.getFirst())) {
+				first = createCircleVertex(layout, endpoints.getFirst());
+				toCircle.put(endpoints.getFirst(), first);
+			} else {
+				first = toCircle.get(endpoints.getFirst());
+			}
+
+			if (!toCircle.containsKey(endpoints.getSecond())) {
+				second = createCircleVertex(layout, endpoints.getSecond());
+				toCircle.put(endpoints.getSecond(), second);
+			} else {
+				second = toCircle.get(endpoints.getSecond());
+			}
+
 			Line line = new Line();
-			line.setStartX(pStart.getX());
-			line.setStartY(pStart.getY());
-			line.setEndX(pEnd.getX());
-			line.setEndY(pEnd.getY());
-			// add the edges to the screen
-			viz.getChildren().add(line);
+			line.setStroke(Color.BLACK);
+			line.startXProperty().bind(first.centerXProperty());
+			line.startYProperty().bind(first.centerYProperty());
+			line.endXProperty().bind(second.centerXProperty());
+			line.endYProperty().bind(second.centerYProperty());
+
+			toLine.put(n, line);
+
+			undirectGraph.addEdge(line, first, second);
 		}
+
+		return undirectGraph;
+
+	}
+
+	public void testStacks() {
+		Circle circle = createCircleVertex(circleLayout, "");
+		Text text = new Text("42");
+		text.setBoundsType(TextBoundsType.VISUAL);
+		StackPane stack = new StackPane();
+		stack.getChildren().addAll(circle, text);
+
+		// Circle c = (Circle) stack.getChildren().get(0);
+		// Text t=(Text)stack.getChildren().get(1);
+	}
+
+	/**
+	 * Draws the circles and attaches eventhandler for the circles.
+	 * 
+	 * @param layout
+	 *            to be drawn
+	 * @param vert
+	 *            is String to be converted into Circle
+	 * @return the Circle
+	 */
+	public Circle createCircleVertex(Layout<String, Number> layout, String vert) {
+		// get the xy of the vertex.
+		Point2D p = layout.transform(vert);
+		Circle circle = new Circle();
+		circle.setCenterX(p.getX());
+		circle.setCenterY(p.getY());
+		circle.setRadius(CIRCLE_SIZE);
+		circle.setFill(Color.BLACK);
+
+		circle.setOnMousePressed(new EventHandler<MouseEvent>() {
+			// Change the color to Rosybrown when pressed.
+			@Override
+			public void handle(MouseEvent t) {
+				Circle c = (Circle) t.getSource();
+				c.setFill(Color.ROSYBROWN);
+				t.consume();
+			}
+		});
+
+		circle.setOnMouseReleased(new EventHandler<MouseEvent>() {
+			// Change it back to default color when released.
+			@Override
+			public void handle(MouseEvent t) {
+				Circle c = (Circle) t.getSource();
+				c.setFill(Color.BLACK);
+				t.consume();
+			}
+		});
+
+		circle.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			// Update the circle's position when it's dragged.
+			@Override
+			public void handle(MouseEvent t) {
+				Circle c = (Circle) t.getSource();
+				c.setCenterX(t.getX());
+				c.setCenterY(t.getY());
+				t.consume();
+			}
+		});
+		return circle;
 	}
 
 	/**
