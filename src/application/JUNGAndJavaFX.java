@@ -13,12 +13,10 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextBoundsType;
+import javafx.scene.shape.StrokeType;
 import javafx.stage.Stage;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
@@ -47,7 +45,8 @@ public class JUNGAndJavaFX extends Application {
 	private Graph<Circle, Line> graph1;
 	Layout<String, Number> circleLayout;
 	Group viz1;
-	
+	double orgSceneX, orgSceneY, orgTranslateX, orgTranslateY;
+
 	@Override
 	public void start(Stage stage) {
 		BorderPane rootLayout = null;
@@ -61,6 +60,27 @@ public class JUNGAndJavaFX extends Application {
 		}
 
 		Scene scene = new Scene(rootLayout, 800, 400, Color.WHITE);
+
+		scene.setOnMousePressed(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent arg0) {
+				orgSceneX = arg0.getSceneX();
+				orgSceneY = arg0.getSceneY();
+				orgTranslateX = viz1.getTranslateX();
+				orgTranslateY = viz1.getTranslateY();
+			}
+
+		});
+
+		scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent arg0) {
+				viz1.setTranslateX(orgTranslateX + arg0.getSceneX() - orgSceneX);
+				viz1.setTranslateY(orgTranslateY + arg0.getSceneY() - orgSceneY);
+			}
+
+		});
+
 		stage.setMaximized(true);
 		stage.setScene(scene);
 		stage.show();
@@ -68,10 +88,9 @@ public class JUNGAndJavaFX extends Application {
 		// create a group for the visualization
 		viz1 = new Group();
 
-		circleLayout = doJungStuff(LayoutType.ISOM);
+		circleLayout = doJungStuff(LayoutType.CIRCLE);
 
 		// draw the graph
-
 		drawGraph(graph1, viz1);
 
 		rootLayout.getChildren().add(viz1);
@@ -90,6 +109,9 @@ public class JUNGAndJavaFX extends Application {
 		// create a sample graph using JUNG's TestGraphs class.
 
 		Graph<String, Number> temp = TestGraphs.getOneComponentGraph();
+
+		for (Number n : temp.getEdges())
+			System.out.println(temp.getEndpoints(n));
 
 		// define the layout we want to use for the graph
 		// The layout will be modified by the VisualizationModel
@@ -115,9 +137,6 @@ public class JUNGAndJavaFX extends Application {
 
 		this.graph1 = convertGraph(TestGraphs.getOneComponentGraph(), layout);
 
-		// = new AggregateLayout<String, Number>(
-		// graph1);
-
 		// Define the visualization model. This is how JUNG calculates the
 		// layout for the graph. It updates the layout object passed in.
 		new DefaultVisualizationModel<>(layout, new Dimension(400, 400));
@@ -134,15 +153,15 @@ public class JUNGAndJavaFX extends Application {
 	 * @param circleLayout2
 	 * @param viz
 	 */
-	public void drawGraph(Graph<Circle, Line> graph, Group group) {
-		for (Circle c : graph.getVertices()) {
+	public void drawGraph(Graph<Circle, Line> graph12, Group group) {
+		for (Circle c : graph12.getVertices()) {
 			if (!group.getChildren().contains(c)) {
 				group.getChildren().add(c);
 			}
 
 		}
 
-		for (Line l : graph.getEdges()) {
+		for (Line l : graph12.getEdges()) {
 			if (!group.getChildren().contains(l)) {
 				group.getChildren().add(l);
 			}
@@ -202,10 +221,10 @@ public class JUNGAndJavaFX extends Application {
 
 			Line line = new Line();
 			line.setStroke(Color.BLACK);
-			line.startXProperty().bind(first.centerXProperty());
-			line.startYProperty().bind(first.centerYProperty());
-			line.endXProperty().bind(second.centerXProperty());
-			line.endYProperty().bind(second.centerYProperty());
+			line.startXProperty().bind(((Circle) first).centerXProperty());
+			line.startYProperty().bind(((Circle) first).centerYProperty());
+			line.endXProperty().bind(((Circle) second).centerXProperty());
+			line.endYProperty().bind(((Circle) second).centerYProperty());
 
 			toLine.put(n, line);
 
@@ -214,17 +233,6 @@ public class JUNGAndJavaFX extends Application {
 
 		return undirectGraph;
 
-	}
-
-	public void testStacks() {
-		Circle circle = createCircleVertex(circleLayout, "");
-		Text text = new Text("42");
-		text.setBoundsType(TextBoundsType.VISUAL);
-		StackPane stack = new StackPane();
-		stack.getChildren().addAll(circle, text);
-
-		// Circle c = (Circle) stack.getChildren().get(0);
-		// Text t=(Text)stack.getChildren().get(1);
 	}
 
 	/**
@@ -239,11 +247,12 @@ public class JUNGAndJavaFX extends Application {
 	public Circle createCircleVertex(Layout<String, Number> layout, String vert) {
 		// get the xy of the vertex.
 		Point2D p = layout.transform(vert);
-		Circle circle = new Circle();
-		circle.setCenterX(p.getX());
-		circle.setCenterY(p.getY());
-		circle.setRadius(CIRCLE_SIZE);
-		circle.setFill(Color.BLACK);
+		Circle circle = new Circle(p.getX(), p.getY(), CIRCLE_SIZE, Color.WHITE);
+		circle.setStrokeType(StrokeType.OUTSIDE);
+		circle.setStroke(Color.BLACK);
+		circle.setStrokeWidth(2);
+
+		circle.setOnMouseClicked(e -> System.out.println(e.getSource()));
 
 		circle.setOnMousePressed(new EventHandler<MouseEvent>() {
 			// Change the color to Rosybrown when pressed.
@@ -260,7 +269,7 @@ public class JUNGAndJavaFX extends Application {
 			@Override
 			public void handle(MouseEvent t) {
 				Circle c = (Circle) t.getSource();
-				c.setFill(Color.BLACK);
+				c.setFill(Color.WHITE);
 				t.consume();
 			}
 		});
@@ -279,7 +288,8 @@ public class JUNGAndJavaFX extends Application {
 	}
 
 	/**
-	 * Fallback to start FX application 
+	 * Fallback to start FX application
+	 * 
 	 * @param args
 	 *            the command line arguments
 	 */
