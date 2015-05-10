@@ -1,10 +1,7 @@
 package application;
 
 import java.awt.Dimension;
-import java.awt.geom.Point2D;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -16,7 +13,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.StrokeType;
 import javafx.stage.Stage;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
@@ -25,11 +21,8 @@ import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.UndirectedSparseMultigraph;
-import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.graph.util.TestGraphs;
 import edu.uci.ics.jung.visualization.DefaultVisualizationModel;
-import edu.uci.ics.jung.visualization.VisualizationModel;
 
 /**
  * A sample showing how to use JUNG's layout classes to position vertices in a
@@ -38,81 +31,79 @@ import edu.uci.ics.jung.visualization.VisualizationModel;
  * @author jeffreyguenther
  * @author timheng
  */
-public class JUNGAndJavaFX extends Application {
-
-	private static final int CIRCLE_SIZE = 15; // default circle size
+public class JUNGAndJavaFX extends Application implements
+		EventHandler<MouseEvent> {
 
 	private Graph<Circle, Line> graph1;
 	Layout<String, Number> circleLayout;
 	Group viz1;
 	double orgSceneX, orgSceneY, orgTranslateX, orgTranslateY;
+	int stageWidth, stageHeight;
+
+	enum LayoutType {
+		FR, ISOM, KK, CIRCLE, SPRING
+	}
+
+	@Override
+	public void handle(MouseEvent arg0) {
+		if (arg0.getEventType().equals(MouseEvent.MOUSE_DRAGGED)) {
+			viz1.setTranslateX(orgTranslateX + arg0.getSceneX() - orgSceneX);
+			viz1.setTranslateY(orgTranslateY + arg0.getSceneY() - orgSceneY);
+		} else if (arg0.getEventType().equals(MouseEvent.MOUSE_PRESSED)) {
+			orgSceneX = arg0.getSceneX();
+			orgSceneY = arg0.getSceneY();
+			orgTranslateX = viz1.getTranslateX();
+			orgTranslateY = viz1.getTranslateY();
+		}
+		arg0.consume();
+	}
 
 	@Override
 	public void start(Stage stage) {
-		BorderPane rootLayout = null;
-
-		FXMLLoader fxmlLoader = new FXMLLoader();
-		try {
-			fxmlLoader.setLocation(getClass().getResource("/RootLayout.fxml"));
-			rootLayout = (BorderPane) fxmlLoader.load();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		BorderPane rootLayout = loadFXML("/RootLayout.fxml");
 
 		Scene scene = new Scene(rootLayout, 800, 400, Color.WHITE);
-
-		scene.setOnMousePressed(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent arg0) {
-				orgSceneX = arg0.getSceneX();
-				orgSceneY = arg0.getSceneY();
-				orgTranslateX = viz1.getTranslateX();
-				orgTranslateY = viz1.getTranslateY();
-			}
-
-		});
-
-		scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent arg0) {
-				viz1.setTranslateX(orgTranslateX + arg0.getSceneX() - orgSceneX);
-				viz1.setTranslateY(orgTranslateY + arg0.getSceneY() - orgSceneY);
-			}
-
-		});
-
-		stage.setMaximized(true);
-		stage.setScene(scene);
-		stage.show();
+		scene.addEventHandler(MouseEvent.MOUSE_DRAGGED, this);
+		scene.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
 
 		// create a group for the visualization
 		viz1 = new Group();
 
-		circleLayout = doJungStuff(LayoutType.CIRCLE);
+		circleLayout = doJungStuff(LayoutType.CIRCLE,
+				TestGraphs.getOneComponentGraph());
 
 		// draw the graph
 		drawGraph(graph1, viz1);
 
 		rootLayout.getChildren().add(viz1);
 
+		prepareStage(stage, scene);
+	}
+
+	private void prepareStage(Stage stage, Scene scene) {
 		stage.setTitle("Displaying One JUNG Graph");
+		stage.setMaximized(true);
 		stage.setScene(scene);
 		stage.show();
-
+		stageWidth = (int) stage.getWidth();
+		stageHeight = (int) stage.getHeight();
 	}
 
-	enum LayoutType {
-		FR, ISOM, KK, CIRCLE, SPRING
+	private BorderPane loadFXML(String fname) {
+		BorderPane rootLayout = null;
+
+		FXMLLoader fxmlLoader = new FXMLLoader();
+		try {
+			fxmlLoader.setLocation(getClass().getResource(fname));
+			rootLayout = (BorderPane) fxmlLoader.load();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return rootLayout;
 	}
 
-	private Layout<String, Number> doJungStuff(LayoutType lt) {
-		// create a sample graph using JUNG's TestGraphs class.
-
-		Graph<String, Number> temp = TestGraphs.getOneComponentGraph();
-
-		for (Number n : temp.getEdges())
-			System.out.println(temp.getEndpoints(n));
-
+	public Layout<String, Number> doJungStuff(LayoutType lt,
+			Graph<String, Number> temp) {
 		// define the layout we want to use for the graph
 		// The layout will be modified by the VisualizationModel
 		Layout<String, Number> layout;
@@ -135,11 +126,12 @@ public class JUNGAndJavaFX extends Application {
 			break;
 		}
 
-		this.graph1 = convertGraph(TestGraphs.getOneComponentGraph(), layout);
+		this.graph1 = GraphUtil.convertGraph(temp, layout, new CircleBuilder());
 
 		// Define the visualization model. This is how JUNG calculates the
 		// layout for the graph. It updates the layout object passed in.
-		new DefaultVisualizationModel<>(layout, new Dimension(400, 400));
+		new DefaultVisualizationModel<>(layout, new Dimension(stageWidth,
+				stageHeight));
 
 		return layout;
 	}
@@ -154,137 +146,13 @@ public class JUNGAndJavaFX extends Application {
 	 * @param viz
 	 */
 	public void drawGraph(Graph<Circle, Line> graph12, Group group) {
-		for (Circle c : graph12.getVertices()) {
-			if (!group.getChildren().contains(c)) {
+		for (Circle c : graph12.getVertices())
+			if (!group.getChildren().contains(c))
 				group.getChildren().add(c);
-			}
 
-		}
-
-		for (Line l : graph12.getEdges()) {
-			if (!group.getChildren().contains(l)) {
+		for (Line l : graph12.getEdges())
+			if (!group.getChildren().contains(l))
 				group.getChildren().add(l);
-			}
-
-		}
-	}
-
-	/**
-	 * Converts String and Number graph to Circle and Line graph.
-	 * 
-	 * @param graph
-	 *            to layout
-	 * @param layout
-	 *            to position nodes
-	 * @return Circle, Line graph with the given layout
-	 * 
-	 * @author
-	 */
-	public UndirectedSparseMultigraph<Circle, Line> convertGraph(
-			Graph<String, Number> graph, Layout<String, Number> layout) {
-		// look up the circle object used for the string vertex
-		Map<String, Circle> toCircle = new HashMap<>();
-
-		// look up the line object used for the number edge
-		Map<Number, Line> toLine = new HashMap<>();
-
-		// new graph with JavaFX objects in it.
-		UndirectedSparseMultigraph<Circle, Line> undirectGraph = new UndirectedSparseMultigraph<>();
-
-		// Do the layout to get coords for the circles.
-		@SuppressWarnings("unused")
-		VisualizationModel<String, Number> vm1 = new DefaultVisualizationModel<>(
-				layout, new Dimension(400, 400));
-
-		// Draw the edges from graph 1
-		for (Number n : graph.getEdges()) {
-			// get the endpoint verts
-			Pair<String> endpoints = graph.getEndpoints(n);
-
-			// create the circles
-			Circle first = null;
-			Circle second = null;
-
-			if (!toCircle.containsKey(endpoints.getFirst())) {
-				first = createCircleVertex(layout, endpoints.getFirst());
-				toCircle.put(endpoints.getFirst(), first);
-			} else {
-				first = toCircle.get(endpoints.getFirst());
-			}
-
-			if (!toCircle.containsKey(endpoints.getSecond())) {
-				second = createCircleVertex(layout, endpoints.getSecond());
-				toCircle.put(endpoints.getSecond(), second);
-			} else {
-				second = toCircle.get(endpoints.getSecond());
-			}
-
-			Line line = new Line();
-			line.setStroke(Color.BLACK);
-			line.startXProperty().bind(((Circle) first).centerXProperty());
-			line.startYProperty().bind(((Circle) first).centerYProperty());
-			line.endXProperty().bind(((Circle) second).centerXProperty());
-			line.endYProperty().bind(((Circle) second).centerYProperty());
-
-			toLine.put(n, line);
-
-			undirectGraph.addEdge(line, first, second);
-		}
-
-		return undirectGraph;
-
-	}
-
-	/**
-	 * Draws the circles and attaches eventhandler for the circles.
-	 * 
-	 * @param layout
-	 *            to be drawn
-	 * @param vert
-	 *            is String to be converted into Circle
-	 * @return the Circle
-	 */
-	public Circle createCircleVertex(Layout<String, Number> layout, String vert) {
-		// get the xy of the vertex.
-		Point2D p = layout.transform(vert);
-		Circle circle = new Circle(p.getX(), p.getY(), CIRCLE_SIZE, Color.WHITE);
-		circle.setStrokeType(StrokeType.OUTSIDE);
-		circle.setStroke(Color.BLACK);
-		circle.setStrokeWidth(2);
-
-		circle.setOnMouseClicked(e -> System.out.println(e.getSource()));
-
-		circle.setOnMousePressed(new EventHandler<MouseEvent>() {
-			// Change the color to Rosybrown when pressed.
-			@Override
-			public void handle(MouseEvent t) {
-				Circle c = (Circle) t.getSource();
-				c.setFill(Color.ROSYBROWN);
-				t.consume();
-			}
-		});
-
-		circle.setOnMouseReleased(new EventHandler<MouseEvent>() {
-			// Change it back to default color when released.
-			@Override
-			public void handle(MouseEvent t) {
-				Circle c = (Circle) t.getSource();
-				c.setFill(Color.WHITE);
-				t.consume();
-			}
-		});
-
-		circle.setOnMouseDragged(new EventHandler<MouseEvent>() {
-			// Update the circle's position when it's dragged.
-			@Override
-			public void handle(MouseEvent t) {
-				Circle c = (Circle) t.getSource();
-				c.setCenterX(t.getX());
-				c.setCenterY(t.getY());
-				t.consume();
-			}
-		});
-		return circle;
 	}
 
 	/**
