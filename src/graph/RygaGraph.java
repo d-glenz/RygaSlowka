@@ -33,7 +33,8 @@ public class RygaGraph<S extends MyShape<?>> {
 		this.displayGraph = dataGraph;
 	}
 
-	private Layout<String, Number> newLayout(LayoutType lt,
+
+	public static Layout<String, Number> newLayout(LayoutType lt,
 			Graph<String, Number> graph) {
 		Layout<String, Number> layout = null;
 		switch (lt) {
@@ -86,7 +87,7 @@ public class RygaGraph<S extends MyShape<?>> {
 	public void draw(Group group) {
 		for (MyShape<?> c : displayGraph.getVertices())
 			if (!group.getChildren().contains(c))
-				group.getChildren().add(c.getNode());
+				group.getChildren().addAll(c.getNode());
 
 		for (Line l : displayGraph.getEdges())
 			if (!group.getChildren().contains(l))

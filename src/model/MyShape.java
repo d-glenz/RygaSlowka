@@ -15,8 +15,8 @@ public abstract class MyShape<S extends Shape> {
 		super();
 	}
 
-	public Node getNode() {
-		return shape;
+	public Node[] getNode() {
+		return new Node[]{shape};
 	}
 
 	public S getShape() {

@@ -18,6 +18,7 @@ public class Map implements EventHandler<MouseEvent> {
 	
 	public Map(BorderPane rootLayout){
 		scene = new Scene(rootLayout, 800, 400, Color.WHITE);
+		scene.getStylesheets().add("/style.css");
 		scene.addEventHandler(MouseEvent.MOUSE_DRAGGED, this);
 		scene.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
 		viz1 = new Group();

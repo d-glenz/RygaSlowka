@@ -8,8 +8,9 @@ import javafx.application.Application;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import model.CircleShape;
+import model.TextShape;
 import view.Window;
-import edu.uci.ics.jung.algorithms.layout.CircleLayout;
+import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseGraph;
@@ -32,38 +33,39 @@ public class JUNGAndJavaFX extends Application {
 	public void start(Stage stage) {
 		Graph<String, Number> g = TestGraphs.getOneComponentGraph();
 
-		Graph<CircleShape, Line> dataGraph = new SparseGraph<CircleShape, Line>();
-		Layout<String, Number> layout = new CircleLayout<>(g);
+		Graph<TextShape, Line> dataGraph = new SparseGraph<TextShape, Line>();
+		
+		Layout<String, Number> layout = new ISOMLayout<>(g);
 		new DefaultVisualizationModel<>(layout, new Dimension(400, 400));
 
 		dataGraph = convert(g, layout);
 
-		RygaGraph<CircleShape> graph = new RygaGraph<CircleShape>(dataGraph,
-				LayoutType.CIRCLE);
+		RygaGraph<TextShape> graph = new RygaGraph<TextShape>(dataGraph,
+				LayoutType.ISOM);
 		Window w = new Window(stage);
 		graph.draw(w.getGroup());
 	}
 
-	private Graph<CircleShape, Line> convert(Graph<String, Number> g,
+	private Graph<TextShape, Line> convert(Graph<String, Number> g,
 			Layout<String, Number> layout) {
-		Map<String, CircleShape> toCircle = new HashMap<>();
-		Graph<CircleShape, Line> dataGraph = new SparseGraph<>();
+		Map<String, TextShape> toCircle = new HashMap<>();
+		Graph<TextShape, Line> dataGraph = new SparseGraph<>();
 
 		for (Number n : g.getEdges()) {
 			Pair<String> endpoints = g.getEndpoints(n);
 
-			CircleShape first = null;
-			CircleShape second = null;
+			TextShape first = null;
+			TextShape second = null;
 
 			if (!toCircle.containsKey(endpoints.getFirst())) {
-				first = CircleShape.createShape(layout, endpoints.getFirst());
+				first = TextShape.createShape(layout, endpoints.getFirst());
 				toCircle.put(endpoints.getFirst(), first);
 			} else {
 				first = toCircle.get(endpoints.getFirst());
 			}
 
 			if (!toCircle.containsKey(endpoints.getSecond())) {
-				second = CircleShape.createShape(layout, endpoints.getSecond());
+				second = TextShape.createShape(layout, endpoints.getSecond());
 				toCircle.put(endpoints.getSecond(), second);
 			} else {
 				second = toCircle.get(endpoints.getSecond());

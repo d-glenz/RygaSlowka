@@ -45,8 +45,8 @@ public class CircleShape extends MyShape<Circle> implements
 		return new CircleShape(p);
 	}
 
-	public Node getNode() {
-		return circle;
+	public Node[] getNode() {
+		return new Node[]{circle};
 	}
 
 	@Override
