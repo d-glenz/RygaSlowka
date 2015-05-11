@@ -16,6 +16,7 @@ import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseGraph;
 import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.DefaultVisualizationModel;
+import edu.uci.ics.jung.visualization.VisualizationModel;
 
 public class RygaGraph<S extends MyShape<?>> {
 
@@ -61,7 +62,7 @@ public class RygaGraph<S extends MyShape<?>> {
 	private Graph<MyShape<?>, Line> convert(Graph<String, Number> dataGraph2) {
 		Graph<MyShape<?>, Line> result = new SparseGraph<MyShape<?>, Line>();
 
-		new DefaultVisualizationModel<>(layout, new Dimension(400, 400));
+		VisualizationModel<String, Number> vm=new DefaultVisualizationModel<>(layout, new Dimension(400, 400));
 
 		for (Number n : dataGraph.getEdges()) {
 			Pair<String> endpoints = dataGraph.getEndpoints(n);

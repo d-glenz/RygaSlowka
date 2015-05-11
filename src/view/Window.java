@@ -14,6 +14,10 @@ public class Window {
 	BorderPane rootLayout;
 	Dimension stageSize;
 
+	public Dimension getStageSize() {
+		return stageSize;
+	}
+
 	public Window(Stage stage) {
 		rootLayout = loadFXML("/RootLayout.fxml");
 		this.stageSize = prepareStage(stage);

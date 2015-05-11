@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import model.CircleShape;
 import model.TextShape;
 import view.Window;
+import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
@@ -34,15 +35,18 @@ public class JUNGAndJavaFX extends Application {
 		Graph<String, Number> g = TestGraphs.getOneComponentGraph();
 
 		Graph<TextShape, Line> dataGraph = new SparseGraph<TextShape, Line>();
-		
-		Layout<String, Number> layout = new ISOMLayout<>(g);
-		new DefaultVisualizationModel<>(layout, new Dimension(400, 400));
+
+		Layout<String, Number> layout = new FRLayout<>(g);
+
+		Window w = new Window(stage);
+
+		new DefaultVisualizationModel<>(layout, w.getStageSize());
 
 		dataGraph = convert(g, layout);
 
 		RygaGraph<TextShape> graph = new RygaGraph<TextShape>(dataGraph,
-				LayoutType.ISOM);
-		Window w = new Window(stage);
+				LayoutType.FR);
+
 		graph.draw(w.getGroup());
 	}
 
