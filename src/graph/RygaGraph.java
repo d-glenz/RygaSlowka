@@ -85,6 +85,10 @@ public class RygaGraph<S extends MyShape<?>> {
 		return line;
 	}
 
+	/**
+	 * Draws the graph on a JavaFX group
+	 * @param group JavaFX group
+	 */
 	public void draw(Group group) {
 		for (MyShape<?> c : displayGraph.getVertices())
 			if (!group.getChildren().contains(c))

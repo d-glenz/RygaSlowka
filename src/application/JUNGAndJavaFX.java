@@ -1,17 +1,14 @@
 package application;
 
-import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.Map;
 
 import javafx.application.Application;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
-import model.CircleShape;
 import model.TextShape;
 import view.Window;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
-import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseGraph;
@@ -33,20 +30,12 @@ public class JUNGAndJavaFX extends Application {
 	@Override
 	public void start(Stage stage) {
 		Graph<String, Number> g = TestGraphs.getOneComponentGraph();
-
 		Graph<TextShape, Line> dataGraph = new SparseGraph<TextShape, Line>();
-
 		Layout<String, Number> layout = new FRLayout<>(g);
-
 		Window w = new Window(stage);
-
 		new DefaultVisualizationModel<>(layout, w.getStageSize());
-
 		dataGraph = convert(g, layout);
-
-		RygaGraph<TextShape> graph = new RygaGraph<TextShape>(dataGraph,
-				LayoutType.FR);
-
+		RygaGraph<TextShape> graph = new RygaGraph<TextShape>(dataGraph, LayoutType.FR);
 		graph.draw(w.getGroup());
 	}
 

@@ -6,12 +6,14 @@ import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class Window {
 
 	Map map;
 	BorderPane rootLayout;
+	Pane graphPane; 
 	Dimension stageSize;
 
 	public Dimension getStageSize() {
@@ -20,13 +22,13 @@ public class Window {
 
 	public Window(Stage stage) {
 		rootLayout = loadFXML("/RootLayout.fxml");
+		graphPane = (Pane) rootLayout.lookup("#graphPane");
 		this.stageSize = prepareStage(stage);
 	}
 
 	public Dimension prepareStage(Stage stage) {
 		map = new Map(rootLayout);
-		
-		rootLayout.getChildren().add(map.getViz1());
+		graphPane.getChildren().add(map.getViz1());
 		
 		stage.setTitle("Displaying One JUNG Graph");
 		stage.setMaximized(true);
@@ -51,6 +53,9 @@ public class Window {
 		return rootLayout;
 	}
 
+	/**
+	 * @return JavaFX Group the Jung graph is painted on
+	 */
 	public Group getGroup() {
 		return map.getViz1();
 	}
