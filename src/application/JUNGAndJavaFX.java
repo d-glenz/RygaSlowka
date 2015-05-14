@@ -36,7 +36,7 @@ public class JUNGAndJavaFX extends Application {
 		new DefaultVisualizationModel<>(layout, w.getStageSize());
 		dataGraph = convert(g, layout);
 		RygaGraph<TextShape> graph = new RygaGraph<TextShape>(dataGraph, LayoutType.FR);
-		graph.draw(w.getGroup());
+		graph.draw(w.getGraphVisualzation());
 	}
 
 	private Graph<TextShape, Line> convert(Graph<String, Number> g,
