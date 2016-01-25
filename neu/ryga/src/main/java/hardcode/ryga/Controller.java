@@ -3,8 +3,6 @@ package hardcode.ryga;
 import hardcode.ryga.ui.graph.CellType;
 import hardcode.ryga.ui.graph.Graph;
 import hardcode.ryga.ui.graph.Model;
-import hardcode.ryga.ui.layout.base.Layout;
-import hardcode.ryga.ui.layout.random.RandomLayout;
 import hardcode.vortaro.db.FakeDatabase;
 import hardcode.vortaro.gui.GuiController;
 
@@ -36,7 +34,7 @@ public class Controller {
 	private void ui(Stage stage) {
 		try {
 			FXMLLoader fxmlLoader = new FXMLLoader();
-			BorderPane root = fxmlLoader.load(getClass().getResource("App.fxml").openStream());
+			BorderPane root = fxmlLoader.load(getClass().getResource("/App.fxml").openStream());
 
 			controller = (GuiController) fxmlLoader.getController();
 			
@@ -45,7 +43,7 @@ public class Controller {
 			controller.init(database);
 
 			Scene scene = new Scene(root, 700, 400);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			scene.getStylesheets().add(getClass().getResource("/application.css").toExternalForm());
 
 			stage.setScene(scene);
 			stage.setTitle(S.APP_NAME);
@@ -69,7 +67,8 @@ public class Controller {
 
 	}
 
-	private void addGraphComponents() {
+	@SuppressWarnings("unused")
+  private void addGraphComponents() {
 
 		Model model = graph.getModel();
 
@@ -94,7 +93,9 @@ public class Controller {
 		graph.endUpdate();
 	}
 
-	private void initOrientDB() throws Exception {
+	
+	@SuppressWarnings("unused")
+  private void initOrientDB() throws Exception {
 
 		OServer server = OServerMain.create();
 
@@ -106,7 +107,7 @@ public class Controller {
 		server.activate();
 
 		OrientGraph graph = new OrientGraph(
-				"plocal:/home/michael/Temp/orient/db"); // TODO
+				"plocal:/tmp/orient/db"); // TODO
 
 		// use factory instead
 		// OrientGraphFactory factory = new
