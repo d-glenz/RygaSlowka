@@ -1,5 +1,6 @@
 package hardcode.ryga;
 
+import hardcode.ryga.controller.Controller;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
