@@ -1,0 +1,5 @@
+
+/* FOR AUTOFILLTEXTBOX */
+.autofill-text {
+    -fx-skin: "np.com.ngopal.control.AutoFillTextBoxSkin";
+}
