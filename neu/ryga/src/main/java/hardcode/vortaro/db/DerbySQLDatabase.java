@@ -60,7 +60,7 @@ public abstract class DerbySQLDatabase implements Database {
 //		conn.setAutoCommit(autocommit);
 	}
 
-	private void createDatabase(Properties props) throws SQLException {
+	public void createDatabase(Properties props) throws SQLException {
 		
 		if (props == null) {
 			conn = DriverManager.getConnection(protocol + databaseName + ";create=true");
@@ -84,7 +84,7 @@ public abstract class DerbySQLDatabase implements Database {
 	 * Remove database related files recursively
 	 * @param dir database base directory
 	 */
-	private void removeDatabaseFromDisk(File dir) {
+	public void removeDatabaseFromDisk(File dir) {
 		if(dir.isDirectory()) {
 			File[] files = dir.listFiles();
 			for(File f : files) {
@@ -98,7 +98,7 @@ public abstract class DerbySQLDatabase implements Database {
 	
 
 
-	protected void initDatabaseInternal() throws SQLException {
+	public void initDatabaseInternal() throws SQLException {
 		// TODO; check things, bla bla
 		Statement executableStatement = conn.createStatement();
 //		String createStatement = 
@@ -106,7 +106,7 @@ public abstract class DerbySQLDatabase implements Database {
 //		executableStatement.execute(createStatement);
 	}
 	
-	protected void executeStatement(String statement) throws SQLException {
+	public void executeStatement(String statement) throws SQLException {
 		Statement executableStatement = conn.createStatement();
 		executableStatement.execute(statement);
 	}
@@ -115,7 +115,7 @@ public abstract class DerbySQLDatabase implements Database {
 	 * 
 	 * @return the SQL create statement
 	 */
-	protected abstract String initDatabase() throws SQLException;
+	public abstract String initDatabase() throws SQLException;
 
 	/**
 	 * For inserting and updating<br>
@@ -129,7 +129,7 @@ public abstract class DerbySQLDatabase implements Database {
 	 * @return
 	 * @throws SQLException
 	 */
-	protected PreparedStatement prepareStatement(String sql)
+	public PreparedStatement prepareStatement(String sql)
 			throws SQLException {
 		return conn.prepareStatement(sql);
 	}
@@ -146,14 +146,14 @@ public abstract class DerbySQLDatabase implements Database {
 		return rs;
 	}
 	
-	protected void dropTable(String tableName) throws SQLException {
+	public void dropTable(String tableName) throws SQLException {
 		PreparedStatement ps = conn.prepareStatement("drop table ?");
 		ps.setString(1, tableName);
 		ps.execute();
 		System.out.println("Dropped table location");
 	}
 
-	protected void shutdownDatabase() throws SQLException {
+	public void shutdownDatabase() throws SQLException {
 		try {
 			// the shutdown=true attribute shuts down Derby
 			DriverManager.getConnection(protocol + ";shutdown=true");

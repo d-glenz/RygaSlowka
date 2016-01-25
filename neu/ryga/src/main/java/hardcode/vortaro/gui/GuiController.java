@@ -20,8 +20,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
+//import javafx.scene.control.Alert;
+//import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -255,10 +255,10 @@ public class GuiController {
 	}
 
 	private void warningMessage(String header, String msg) {
-		Alert alert = new Alert(AlertType.WARNING);
-		alert.setTitle(S.APP_NAME);
-		alert.setHeaderText(header);
-		alert.setContentText(msg);
-		alert.showAndWait();
+//		Alert alert = new Alert(AlertType.WARNING);
+//		alert.setTitle(S.APP_NAME);
+//		alert.setHeaderText(header);
+//		alert.setContentText(msg);
+//		alert.showAndWait();
 	}
 }

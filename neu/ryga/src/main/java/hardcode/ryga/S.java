@@ -9,9 +9,9 @@ public class S {
   public static Image getFlagImage(String language) {
     switch (language) {
     case "DE":
-      return new Image(S.class.getResourceAsStream("DE.png"));
+      return new Image(S.class.getResourceAsStream("/DE.png"));
     case "PL":
-      return new Image(S.class.getResourceAsStream("PL.png"));
+      return new Image(S.class.getResourceAsStream("/PL.png"));
     default:
       return null;
     }

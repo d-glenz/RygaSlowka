@@ -1,15 +1,16 @@
 package hardcode.vortaro.db;
 
+import hardcode.ryga.model.Vocable;
+import hardcode.ryga.model.Vocabulary;
+import hardcode.ryga.model.VocabularyLookup;
+
 import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import hardcode.ryga.model.Vocable;
-import hardcode.ryga.model.Vocabulary;
-import hardcode.ryga.model.VocabularyLookup;
 
 public class FakeDatabase implements Database, Vocabulary, VocabularyLookup{
 
@@ -37,8 +38,7 @@ public class FakeDatabase implements Database, Vocabulary, VocabularyLookup{
 
 	@Override
 	public List<Vocable> query(String query) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<>();
 	}
 
 	@Override

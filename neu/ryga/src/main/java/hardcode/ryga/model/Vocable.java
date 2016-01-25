@@ -10,11 +10,11 @@ public class Vocable {
 	/**
 	 * Creates a new, empty vocable. Contained fields are null, 'changed' is true;
 	 */
-	protected Vocable() {
+	public Vocable() {
 		changed = true;
 	}
 	
-	protected Vocable(String language, String word, String notes) {
+	public Vocable(String language, String word, String notes) {
 		this.language = language;
 		this.word = word;
 		this.notes = notes;

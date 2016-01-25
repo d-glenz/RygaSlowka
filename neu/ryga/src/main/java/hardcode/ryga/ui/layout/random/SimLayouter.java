@@ -1,12 +1,10 @@
 package hardcode.ryga.ui.layout.random;
 
+import hardcode.ryga.ui.layout.base.Layout;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import com.fxgraph.graph.Cell;
-import com.fxgraph.graph.Graph;
-import com.fxgraph.layout.base.Layout;
 
 /**
  * 

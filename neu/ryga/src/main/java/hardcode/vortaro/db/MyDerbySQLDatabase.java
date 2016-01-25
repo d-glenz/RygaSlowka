@@ -105,7 +105,7 @@ public class MyDerbySQLDatabase extends DerbySQLDatabase implements Vocabulary, 
 	}
 	
 	@Override
-	protected String initDatabase() throws SQLException {
+	public String initDatabase() throws SQLException {
 		//String primKey = "id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"; 
 		
 		String create = "CREATE TABLE " + TABLE_VOCABULARY + " ("
