@@ -62,6 +62,7 @@ public class GuiController {
 	
 	private Stack<Vocable> history;
 
+	@SuppressWarnings("unused")
 	public void init(Vocabulary vocab) {
 		history = new Stack<>();
 		Scene scene = root.getScene();

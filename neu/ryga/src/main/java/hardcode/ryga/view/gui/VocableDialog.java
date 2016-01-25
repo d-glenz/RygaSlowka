@@ -36,6 +36,6 @@ public abstract class VocableDialog extends Dialog {
 
 	@Override
 	public String getFxmlFilename() {
-		return "VocableDialog.fxml";
+		return "/VocableDialog.fxml";
 	}
 }

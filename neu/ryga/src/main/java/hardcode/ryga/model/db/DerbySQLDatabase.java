@@ -98,7 +98,8 @@ public abstract class DerbySQLDatabase implements Database {
 	
 
 
-	public void initDatabaseInternal() throws SQLException {
+	@SuppressWarnings("unused")
+  public void initDatabaseInternal() throws SQLException {
 		// TODO; check things, bla bla
 		Statement executableStatement = conn.createStatement();
 //		String createStatement = 

@@ -20,6 +20,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
+@SuppressWarnings("unused")
 public class AddConnectionDialog extends Dialog {
 	
 	private Label lblWord;
@@ -28,7 +29,7 @@ public class AddConnectionDialog extends Dialog {
 	private TextField txtWord;
 	private VBox queryListContainer;
 	
-	private VBox vboxConnectTo;
+  private VBox vboxConnectTo;
 	private Label lblConnectToWord;
 	private ImageView imgViewConnectToLanguage;
 	private Label lblConnecToNotes;
@@ -159,7 +160,7 @@ public class AddConnectionDialog extends Dialog {
 	
 	@Override
 	public String getFxmlFilename() {
-		return "AddConnectionDialog.fxml";
+		return "/AddConnectionDialog.fxml";
 	}
 
 }
