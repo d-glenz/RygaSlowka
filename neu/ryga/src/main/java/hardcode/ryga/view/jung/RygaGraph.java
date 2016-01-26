@@ -56,6 +56,7 @@ public class RygaGraph<S extends MyShape<?>> {
     return layout;
   }
 
+  @SuppressWarnings("unused")
   public Graph<MyShape<?>, Line> convert(Graph<String, Number> dataGraph2) {
     Graph<MyShape<?>, Line> result = new SparseGraph<MyShape<?>, Line>();
 
