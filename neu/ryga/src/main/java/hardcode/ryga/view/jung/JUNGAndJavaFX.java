@@ -57,10 +57,13 @@ public class JUNGAndJavaFX extends Application {
     // graph.draw(w.getGroup());
 
     Graph<String, Integer> g = new DirectedSparseGraph<String, Integer>();
+    
     g.addVertex("A");
     g.addVertex("B");
     g.addEdge(1, "A", "B");
 
+    
+    
     FRLayout<String, Integer> layout = new FRLayout<>(g);
     layout.setSize(new Dimension(300, 300));
     FXVisualizationViewer<String, Integer> root = new FXVisualizationViewer<>(
