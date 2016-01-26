@@ -1,7 +1,5 @@
 package hardcode.ryga.model.domain;
 
-import hardcode.ryga.model.db.Connection;
-
 import java.sql.SQLException;
 import java.util.List;
 

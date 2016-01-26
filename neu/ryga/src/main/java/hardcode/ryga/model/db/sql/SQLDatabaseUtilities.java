@@ -1,8 +1,8 @@
-package hardcode.ryga.model.db;
+package hardcode.ryga.model.db.sql;
 
 import java.sql.SQLException;
 
-public class DatabaseUtilities {
+public class SQLDatabaseUtilities {
 	
 	/**
 	 * Prints details of an SQLException chain to <code>System.err</code>.

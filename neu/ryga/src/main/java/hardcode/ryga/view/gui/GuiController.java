@@ -1,8 +1,8 @@
 package hardcode.ryga.view.gui;
 
 import hardcode.ryga.controller.S;
-import hardcode.ryga.model.db.Connection;
-import hardcode.ryga.model.db.DatabaseUtilities;
+import hardcode.ryga.model.db.sql.SQLDatabaseUtilities;
+import hardcode.ryga.model.domain.Connection;
 import hardcode.ryga.model.domain.Vocable;
 import hardcode.ryga.model.domain.Vocabulary;
 import hardcode.ryga.model.domain.VocabularyLookup;
@@ -160,7 +160,7 @@ public class GuiController {
 			queryList.query(query);
 		} catch (SQLException e) {
 			warningMessage("Could not select in databse.",
-					DatabaseUtilities.prettifySQLException(e));
+					SQLDatabaseUtilities.prettifySQLException(e));
 		}
 	}
 	

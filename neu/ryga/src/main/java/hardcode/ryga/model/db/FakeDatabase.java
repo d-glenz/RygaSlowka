@@ -1,18 +1,15 @@
 package hardcode.ryga.model.db;
 
+import hardcode.ryga.model.domain.Connection;
 import hardcode.ryga.model.domain.Vocable;
 import hardcode.ryga.model.domain.Vocabulary;
 import hardcode.ryga.model.domain.VocabularyLookup;
 
-import java.io.File;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
-public class FakeDatabase implements Database, Vocabulary, VocabularyLookup{
+public class FakeDatabase implements Vocabulary, VocabularyLookup {
 
 	public FakeDatabase(String databaseName) throws SQLException {
 		super();
@@ -82,66 +79,6 @@ public class FakeDatabase implements Database, Vocabulary, VocabularyLookup{
 	@Override
 	public void addConnection(Vocable from, Vocable to,
 			String connectionTableName) throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public String initDatabase() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void connectToDatabase() throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void createDatabase(Properties props) throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void removeDatabaseFromDisk(File dir) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void initDatabaseInternal() throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void executeStatement(String statement) throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public PreparedStatement prepareStatement(String sql) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ResultSet select(String sqlQuery) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void dropTable(String tableName) throws SQLException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void shutdownDatabase() throws SQLException {
 		// TODO Auto-generated method stub
 		
 	}

@@ -1,4 +1,4 @@
-package hardcode.ryga.model.db;
+package hardcode.ryga.model.db.sql;
 
 import java.io.File;
 import java.sql.Connection;
@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-public abstract class DerbySQLDatabase implements Database {
+public abstract class DerbySQLDatabase  {
 	private String protocol = "jdbc:derby:";
 	private String databaseName;
 	private Connection conn;

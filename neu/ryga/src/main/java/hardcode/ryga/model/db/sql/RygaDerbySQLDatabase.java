@@ -1,6 +1,7 @@
-package hardcode.ryga.model.db;
+package hardcode.ryga.model.db.sql;
 
 import hardcode.ryga.controller.S;
+import hardcode.ryga.model.domain.Connection;
 import hardcode.ryga.model.domain.Vocable;
 import hardcode.ryga.model.domain.Vocabulary;
 import hardcode.ryga.model.domain.VocabularyLookup;
@@ -11,7 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyDerbySQLDatabase extends DerbySQLDatabase implements Vocabulary, VocabularyLookup {
+public class RygaDerbySQLDatabase extends DerbySQLDatabase implements Vocabulary, VocabularyLookup {
 	
 	public static String DATABASE_NAME = S.APP_NAME.toLowerCase() + "_db";
 	public static String TABLE_VOCABULARY = "vocabulary";
@@ -21,7 +22,7 @@ public class MyDerbySQLDatabase extends DerbySQLDatabase implements Vocabulary, 
 	
 	private List<String> connectionTableNames;
 	
-	public MyDerbySQLDatabase() throws SQLException {
+	public RygaDerbySQLDatabase() throws SQLException {
 		super(DATABASE_NAME);
 		determineConnectionTableNames();
 	}
