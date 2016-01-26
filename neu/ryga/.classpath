@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="hardcode/ryga/App.java|hardcode/ryga/ui/layout/random/SimLayouter.java|hardcode/ryga/view/ui/random/SimLayouter.java" kind="src" output="target/classes" path="src/main/java">
+	<classpathentry excluding="hardcode/ryga/App.java|hardcode/ryga/ui/layout/random/SimLayouter.java|hardcode/ryga/view/ui/random/SimLayouter.java|hardcode/ryga/model/db/Database.java" kind="src" output="target/classes" path="src/main/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>

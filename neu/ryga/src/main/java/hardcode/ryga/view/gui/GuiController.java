@@ -1,8 +1,8 @@
 package hardcode.ryga.view.gui;
 
 import hardcode.ryga.controller.S;
-import hardcode.ryga.model.db.Connection;
-import hardcode.ryga.model.db.DatabaseUtilities;
+import hardcode.ryga.model.db.sql.SQLDatabaseUtilities;
+import hardcode.ryga.model.domain.Connection;
 import hardcode.ryga.model.domain.Vocable;
 import hardcode.ryga.model.domain.Vocabulary;
 import hardcode.ryga.model.domain.VocabularyLookup;
@@ -16,18 +16,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import com.visulytic.jungfx.visualization.FXVisualizationViewer;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 //import javafx.scene.control.Alert;
 //import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
 
 public class GuiController {
 
@@ -50,7 +55,7 @@ public class GuiController {
 	@FXML
 	private ImageView imgViewTranslateLang;
 	@FXML
-	private FlowPane paneConnections;
+	private Pane graphPane;
 	@FXML
 	private Button btnPrev;
 	@FXML
@@ -160,7 +165,7 @@ public class GuiController {
 			queryList.query(query);
 		} catch (SQLException e) {
 			warningMessage("Could not select in databse.",
-					DatabaseUtilities.prettifySQLException(e));
+					SQLDatabaseUtilities.prettifySQLException(e));
 		}
 	}
 	
@@ -181,7 +186,7 @@ public class GuiController {
 	}
 
 	private void searchForConnections(Vocable vocable) {
-		paneConnections.getChildren().clear();
+		//paneConnections.getChildren().clear();
 		
 		List<Vocable> translations = new ArrayList<>();
 		try {
@@ -225,7 +230,7 @@ public class GuiController {
 				setCurrentVocable(vocable);
 			}
 		});
-		paneConnections.getChildren().add(cp);
+		//paneConnections.getChildren().add(cp);
 		//TODO
 	}
 
@@ -253,6 +258,10 @@ public class GuiController {
 			}
 		};
 
+	}
+	
+	public void insertGraph(FXVisualizationViewer<?, ?> graph) {
+		graphPane.getChildren().add(graph);
 	}
 
 	private void warningMessage(String header, String msg) {

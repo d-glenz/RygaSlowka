@@ -1,6 +1,5 @@
-package hardcode.ryga.model.db;
+package hardcode.ryga.model.domain;
 
-import hardcode.ryga.model.domain.Vocable;
 
 public class Connection {
 	

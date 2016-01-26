@@ -1,8 +1,8 @@
-package hardcode.ryga.model.db;
+package hardcode.ryga.model.db.sql;
 
 import java.sql.SQLException;
 
-public class DatabaseUtilities {
+public class SQLDatabaseUtilities {
 	
 	/**
 	 * Prints details of an SQLException chain to <code>System.err</code>.
@@ -21,7 +21,10 @@ public class DatabaseUtilities {
 			System.err.println("  Message:    " + e.getMessage());
 			// for stack traces, refer to derby.log or uncomment this:
 			System.err.println("----- Trace -----");
-			e.printStackTrace(System.err);
+			e./**
+			 * Remove database related files recursively
+			 * @param dir database base directory
+			 */printStackTrace(System.err);
 			e = e.getNextException();
 		}
 	}
