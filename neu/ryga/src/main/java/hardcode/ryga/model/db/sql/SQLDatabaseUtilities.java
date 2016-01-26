@@ -21,7 +21,10 @@ public class SQLDatabaseUtilities {
 			System.err.println("  Message:    " + e.getMessage());
 			// for stack traces, refer to derby.log or uncomment this:
 			System.err.println("----- Trace -----");
-			e.printStackTrace(System.err);
+			e./**
+			 * Remove database related files recursively
+			 * @param dir database base directory
+			 */printStackTrace(System.err);
 			e = e.getNextException();
 		}
 	}

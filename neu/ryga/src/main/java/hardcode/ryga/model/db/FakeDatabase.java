@@ -10,9 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FakeDatabase implements Vocabulary, VocabularyLookup {
+	
+	private List<Vocable> vocables;
 
 	public FakeDatabase(String databaseName) throws SQLException {
 		super();
+		vocables = new ArrayList<>();
 	}
 
 	@Override
@@ -24,6 +27,7 @@ public class FakeDatabase implements Vocabulary, VocabularyLookup {
 	public void addVocable(Vocable vocable) throws SQLException {
 		// TODO Auto-generated method stub
 		System.out.println("Vokabel "+vocable.getWord()+" hinzugefügt");
+		vocables.add(vocable);
 	}
 
 	@Override
@@ -34,7 +38,9 @@ public class FakeDatabase implements Vocabulary, VocabularyLookup {
 
 	@Override
 	public List<Vocable> query(String query) throws SQLException {
-		return new ArrayList<>();
+		// TODO Auto-generated method stub
+		//return new ArrayList<>();
+		return vocables;
 	}
 
 	@Override

@@ -103,7 +103,7 @@ public class JUNGAndJavaFX extends Application {
     stage.show();
   }
 
-  @SuppressWarnings({ "unused" })
+
   private Graph<TextShape, Line> convert(Graph<String, Number> g,
       Layout<String, Number> layout) {
     Map<String, TextShape> toCircle = new HashMap<>();
