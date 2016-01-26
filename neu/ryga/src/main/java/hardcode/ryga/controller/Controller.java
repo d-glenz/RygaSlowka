@@ -7,35 +7,23 @@ import hardcode.ryga.view.ui.graph.Graph;
 import hardcode.ryga.view.ui.graph.Model;
 
 import java.awt.Dimension;
-import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
 import javafx.stage.Stage;
-
-import org.apache.commons.collections15.Transformer;
 
 import com.orientechnologies.orient.server.OServer;
 import com.orientechnologies.orient.server.OServerMain;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-import com.visulytic.jungfx.visualization.FXEdgeRenderer;
 import com.visulytic.jungfx.visualization.FXVisualizationViewer;
-import com.visulytic.jungfx.visualization.IFXRenderContext;
 
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
-import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
 //import edu.uci.ics.jung.graph.Graph;
@@ -43,11 +31,10 @@ import edu.uci.ics.jung.graph.DirectedSparseGraph;
 public class Controller {
 
   private Graph graph = new Graph();
-  
+
   private edu.uci.ics.jung.graph.Graph<String, Integer> jungGraph;
 
   private GuiController guiController;
-  
 
   public Controller(Stage stage) {
     ui(stage);
@@ -64,16 +51,15 @@ public class Controller {
       FakeDatabase database = new FakeDatabase(null);
 
       guiController.init(database);
-      
-      jungGraph=new DirectedSparseGraph<String, Integer>();
+
+      jungGraph = new DirectedSparseGraph<String, Integer>();
       jungGraph.addVertex("A");
       jungGraph.addVertex("B");
       jungGraph.addEdge(1, "A", "B");
 
-      FRLayout layout=new FRLayout(jungGraph);
-      layout.setSize(new Dimension(300, 300));
-      //FIXME
-      FXVisualizationViewer jung = new JungController(layout);//jung();//
+      FXVisualizationViewer<String, Integer> jung = new JungController(
+          jungGraph, new Dimension(300, 300));
+      jung.renderGraph();
 
       guiController.insertGraph(jung);
 
@@ -101,69 +87,7 @@ public class Controller {
 
   }
 
-  private FXVisualizationViewer jung() {
-    // Graph<String, Number> g = TestGraphs.getOneComponentGraph();
-    //
-    // Graph<TextShape, Line> dataGraph = new SparseGraph<TextShape,
-    // Line>();
-    //
-    // Layout<String, Number> layout = new FRLayout<>(g);
-    //
-    // Window w = new Window(stage);
-    //
-    // new DefaultVisualizationModel<>(layout, w.getStageSize());
-    //
-    // dataGraph = convert(g, layout);
-    //
-    // RygaGraph<TextShape> graph = new RygaGraph<TextShape>(dataGraph,
-    // LayoutType.FR);
-    //
-    // graph.draw(w.getGroup());
-
-    edu.uci.ics.jung.graph.Graph<String, Integer> g = new DirectedSparseGraph<String, Integer>();
-    g.addVertex("A");
-    g.addVertex("B");
-    g.addEdge(1, "A", "B");
-
-    FRLayout<String, Integer> layout = new FRLayout<>(g);
-    layout.setSize(new Dimension(300, 300));
-    FXVisualizationViewer<String, Integer> root = new FXVisualizationViewer<>(
-        layout);
-
-    root.getFXRenderContext().setVertexNodeTransformer(
-        new Transformer<String, Node>() {
-
-          @Override
-          public Node transform(String input) {
-            Circle rect = new Circle(0, 0, 5);
-            rect.setOnMouseDragged(new EventHandler<MouseEvent>() {
-              public void handle(MouseEvent event) {
-                rect.setCenterX(event.getX());
-                rect.setCenterY(event.getY());
-              }
-            });
-            return rect;
-          }
-        });
-
-    root.getFXRenderer().setEdgeRenderer(new FXEdgeRenderer<String, Integer>() {
-      public void paintEdge(IFXRenderContext<String, Integer> rc,
-          Layout<String, Integer> layout, Integer e) {
-        Pane pane = rc.getPane();
-        edu.uci.ics.jung.graph.Graph<String, Integer> graph = layout.getGraph();
-        Point2D start = layout.transform(graph.getSource(e));
-        Point2D end = layout.transform(graph.getDest(e));
-        Line l = new Line(start.getX(), start.getY(), end.getX(), end.getY());
-
-        // l.startXProperty().bind(); //TODO //FIXME
-        pane.getChildren().add(l);
-      }
-    });
-
-    root.renderGraph();
-    return root;
-  }
-
+  @SuppressWarnings("unused")
   private void addGraphComponents() {
 
     Model model = graph.getModel();
@@ -189,6 +113,7 @@ public class Controller {
     graph.endUpdate();
   }
 
+  @SuppressWarnings("unused")
   private void initOrientDB() throws Exception {
 
     OServer server = OServerMain.create();
