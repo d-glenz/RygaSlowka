@@ -1,6 +1,7 @@
 package hardcode.ryga.view.gui;
 
 import hardcode.ryga.controller.S;
+import hardcode.ryga.model.db.DatabaseException;
 import hardcode.ryga.model.domain.Vocable;
 import hardcode.ryga.model.domain.Vocabulary;
 import hardcode.ryga.model.domain.VocabularyLookup;
@@ -78,7 +79,7 @@ public class AddConnectionDialog extends Dialog {
 					String oldValue, String newValue) {
 						try {
 							queryList.query(newValue);
-						} catch (SQLException e) {
+						} catch (DatabaseException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
@@ -89,7 +90,7 @@ public class AddConnectionDialog extends Dialog {
 		btnConnect.setOnAction(e -> {
 			try {
 				vocabulary.addConnection(getVocable(), currentConnectionToVocable, combo.getSelectionModel().getSelectedItem());
-			} catch (SQLException e1) {
+			} catch (DatabaseException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 				return;
@@ -133,7 +134,7 @@ public class AddConnectionDialog extends Dialog {
 			public void onOk(Vocable vocable) {
 				try {
 					vocabulary.addVocable(vocable);
-				} catch (SQLException e) {
+				} catch (DatabaseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

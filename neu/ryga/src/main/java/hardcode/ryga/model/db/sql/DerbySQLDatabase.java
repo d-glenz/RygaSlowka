@@ -1,5 +1,7 @@
 package hardcode.ryga.model.db.sql;
 
+import hardcode.ryga.model.db.DatabaseException;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -16,15 +18,16 @@ public abstract class DerbySQLDatabase  {
 //	private boolean autoCommit; //TODO
 	private Properties properties = null; //TODO
 	
-	public DerbySQLDatabase(String databaseName) throws SQLException {
+	public DerbySQLDatabase(String databaseName) throws DatabaseException {
 		this.databaseName = databaseName;
 		conn = null;
 		databaseName = null;
 //		autoCommit = false;
+		
 		connectToDatabase(); //autocommit true
 	}
 
-	public void connectToDatabase() throws SQLException {
+	public void connectToDatabase() throws DatabaseException {
 		/*
 		 * This connection specifies create=true in the connection URL to cause
 		 * the database to be created when connecting for the first time. To
@@ -49,7 +52,7 @@ public abstract class DerbySQLDatabase  {
 				System.out.println("Database '" + databaseName + "' does not exist. Creating database...");
 				createDatabase(properties);
 			} else {
-				throw sqle;
+				throw new DatabaseException(sqle);
 			}
 		}
 
@@ -60,15 +63,17 @@ public abstract class DerbySQLDatabase  {
 //		conn.setAutoCommit(autocommit);
 	}
 
-	public void createDatabase(Properties props) throws SQLException {
+	public void createDatabase(Properties props) throws DatabaseException {
 		
-		if (props == null) {
-			conn = DriverManager.getConnection(protocol + databaseName + ";create=true");
-		} else {
-			conn = DriverManager.getConnection(protocol + databaseName + ";create=true", props);
-		}
+		
 		
 		try {
+			if (props == null) {
+				conn = DriverManager.getConnection(protocol + databaseName + ";create=true");
+			} else {
+				conn = DriverManager.getConnection(protocol + databaseName + ";create=true", props);
+			}
+			
 			initDatabaseInternal();
 		} catch (SQLException e) {
 			shutdownDatabase();
@@ -76,7 +81,7 @@ public abstract class DerbySQLDatabase  {
 			File dir = new File(System.getProperty("user.dir") + File.separator + databaseName);
 			removeDatabaseFromDisk(dir);
 			
-			throw e;
+			throw new DatabaseException(e);
 		}
 	}
 
@@ -99,24 +104,35 @@ public abstract class DerbySQLDatabase  {
 
 
 	@SuppressWarnings("unused")
-  public void initDatabaseInternal() throws SQLException {
+  public void initDatabaseInternal() throws DatabaseException {
 		// TODO; check things, bla bla
-		Statement executableStatement = conn.createStatement();
-//		String createStatement = 
-				initDatabase();
-//		executableStatement.execute(createStatement);
+		try {
+			Statement executableStatement = conn.createStatement();
+//			String createStatement = 
+					initDatabase();
+//			executableStatement.execute(createStatement);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 	
-	public void executeStatement(String statement) throws SQLException {
-		Statement executableStatement = conn.createStatement();
-		executableStatement.execute(statement);
+	public void executeStatement(String statement) throws DatabaseException {
+		Statement executableStatement;
+		try {
+			executableStatement = conn.createStatement();
+			executableStatement.execute(statement);
+		} catch (SQLException e) {
+			throw new DatabaseException(e);
+		}
 	}
 
 	/**
 	 * 
 	 * @return the SQL create statement
 	 */
-	public abstract String initDatabase() throws SQLException;
+	public abstract String initDatabase() throws DatabaseException;
 
 	/**
 	 * For inserting and updating<br>
@@ -131,8 +147,14 @@ public abstract class DerbySQLDatabase  {
 	 * @throws SQLException
 	 */
 	public PreparedStatement prepareStatement(String sql)
-			throws SQLException {
-		return conn.prepareStatement(sql);
+			throws DatabaseException {
+		PreparedStatement ps = null;
+		try {
+			ps = conn.prepareStatement(sql);
+		} catch (SQLException e) {
+			throw new DatabaseException(e);
+		}
+		return ps;
 	}
 
 	/**
@@ -141,20 +163,31 @@ public abstract class DerbySQLDatabase  {
 	 * @return ResultSet with query results
 	 * @throws SQLException
 	 */
-	public ResultSet select(String sqlQuery) throws SQLException { //FIXME: mache protected!
-		Statement s = conn.createStatement();
-		ResultSet rs = s.executeQuery(sqlQuery);
+	public ResultSet select(String sqlQuery) throws DatabaseException { //FIXME: mache protected!
+		ResultSet rs = null;
+		try {
+			Statement s = conn.createStatement();
+			rs = s.executeQuery(sqlQuery);
+		} catch (SQLException e) {
+			throw new DatabaseException(e);
+		}
 		return rs;
 	}
 	
-	public void dropTable(String tableName) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement("drop table ?");
-		ps.setString(1, tableName);
-		ps.execute();
-		System.out.println("Dropped table location");
+	public void dropTable(String tableName) throws DatabaseException {
+		try {
+			PreparedStatement ps = conn.prepareStatement("drop table ?");
+			ps.setString(1, tableName);
+			ps.execute();
+			System.out.println("Dropped table location");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
-	public void shutdownDatabase() throws SQLException {
+	public void shutdownDatabase() throws DatabaseException {
 		try {
 			// the shutdown=true attribute shuts down Derby
 			DriverManager.getConnection(protocol + ";shutdown=true");
@@ -166,12 +199,16 @@ public abstract class DerbySQLDatabase  {
 
 			} else {
 				System.err.println("Derby did not shut down normally");
-				throw se;
+				throw new DatabaseException(se);
 			}
 		}
 
 		if (conn != null) {
-			conn.close();
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				throw new DatabaseException(e);
+			}
 			conn = null;
 		}
 

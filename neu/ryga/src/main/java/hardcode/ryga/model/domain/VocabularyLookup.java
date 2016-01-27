@@ -1,5 +1,7 @@
 package hardcode.ryga.model.domain;
 
+import hardcode.ryga.model.db.DatabaseException;
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -11,6 +13,6 @@ public interface VocabularyLookup {
 	 * @return
 	 * @throws SQLException
 	 */
-	public List<Vocable> query(String query) throws SQLException;
+	public List<Vocable> query(String query) throws DatabaseException;
 
 }

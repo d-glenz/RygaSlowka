@@ -1,6 +1,7 @@
 package hardcode.ryga.model.db.sql;
 
 import hardcode.ryga.controller.S;
+import hardcode.ryga.model.db.DatabaseException;
 import hardcode.ryga.model.domain.Connection;
 import hardcode.ryga.model.domain.Vocable;
 import hardcode.ryga.model.domain.Vocabulary;
@@ -22,26 +23,31 @@ public class RygaDerbySQLDatabase extends DerbySQLDatabase implements Vocabulary
 	
 	private List<String> connectionTableNames;
 	
-	public RygaDerbySQLDatabase() throws SQLException {
+	public RygaDerbySQLDatabase() throws DatabaseException {
 		super(DATABASE_NAME);
 		determineConnectionTableNames();
 	}
 
-	private void determineConnectionTableNames() throws SQLException {
-		connectionTableNames = new ArrayList<>();
-//		connectionTableNames.add(TABLE_TRANSLATION);
-		ResultSet rs = select("SELECT tablename FROM sys.systables");
-		while (rs.next()) {
-			String tableName = rs.getString("tablename");
-			if(!(tableName.toLowerCase().startsWith("sys")||
-					tableName.equalsIgnoreCase(TABLE_VOCABULARY) ||
-					tableName.equalsIgnoreCase(TABLE_TRANSLATION))) {
-				connectionTableNames.add(tableName);
+	private void determineConnectionTableNames() throws DatabaseException {
+		try {
+			connectionTableNames = new ArrayList<>();
+//			connectionTableNames.add(TABLE_TRANSLATION);
+			ResultSet rs = select("SELECT tablename FROM sys.systables");
+
+			while (rs.next()) {
+				String tableName = rs.getString("tablename");
+				if(!(tableName.toLowerCase().startsWith("sys")||
+						tableName.equalsIgnoreCase(TABLE_VOCABULARY) ||
+						tableName.equalsIgnoreCase(TABLE_TRANSLATION))) {
+					connectionTableNames.add(tableName);
+				}
 			}
-		}
-		
-		for(String name : connectionTableNames) {
-			System.out.println(name);
+			
+			for(String name : connectionTableNames) {
+				System.out.println(name);
+			}
+		} catch (SQLException e) {
+			throw new DatabaseException(e);
 		}
 	}
 	
@@ -57,19 +63,24 @@ public class RygaDerbySQLDatabase extends DerbySQLDatabase implements Vocabulary
 		return l;
 	}
 	
-	private void insertVocable(String language, String word, String notes) throws SQLException {
+	private void insertVocable(String language, String word, String notes) throws DatabaseException {
 		String sql = "INSERT INTO " + TABLE_VOCABULARY + " VALUES (?, ?, ?)";
 		PreparedStatement ps = prepareStatement(sql);
-		ps.setString(1, language);
-		ps.setString(2, word);
-		ps.setString(3, notes);
-		ps.execute();
+		try {
+			ps.setString(1, language);
+			ps.setString(2, word);
+			ps.setString(3, notes);
+			ps.execute();
+		} catch (SQLException e) {
+			throw new DatabaseException(e);
+		}
+		
 	}
 	
 	@Override
-	public void addConnectionTable(String tableName) throws SQLException {
+	public void addConnectionTable(String tableName) throws DatabaseException {
 		if(tableName.toLowerCase().startsWith("sys")) {
-			throw new SQLException("Table name must not start with 'sys'.");
+			throw new DatabaseException("Table name must not start with 'sys'.");
 		}
 		
 //		String create = "CREATE TABLE " + tableName + " ("
@@ -101,12 +112,12 @@ public class RygaDerbySQLDatabase extends DerbySQLDatabase implements Vocabulary
 		determineConnectionTableNames();
 	}
 	
-	public void deleteConnectionTable(String tableName) throws SQLException {
+	public void deleteConnectionTable(String tableName) throws DatabaseException {
 		//TODO
 	}
 	
 	@Override
-	public String initDatabase() throws SQLException {
+	public String initDatabase() throws DatabaseException {
 		//String primKey = "id INT not null primary key GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"; 
 		
 		String create = "CREATE TABLE " + TABLE_VOCABULARY + " ("
@@ -135,12 +146,12 @@ public class RygaDerbySQLDatabase extends DerbySQLDatabase implements Vocabulary
 	}
 
 	@Override
-	public void addVocable(Vocable vocable) throws SQLException {
+	public void addVocable(Vocable vocable) throws DatabaseException {
 		insertVocable(vocable.getLanguage(), vocable.getWord(), vocable.getNotes());
 	}
 
 	@Override
-	public void updateVocable(Vocable vocable) throws SQLException {
+	public void updateVocable(Vocable vocable) throws DatabaseException {
 		updateVocableNotes(vocable.getLanguage(), vocable.getWord(), vocable.getNotes());
 	}
 	
@@ -151,34 +162,42 @@ public class RygaDerbySQLDatabase extends DerbySQLDatabase implements Vocabulary
 	 * @param notes
 	 * @throws SQLException
 	 */
-	private void updateVocableNotes(String language, String word, String notes) throws SQLException {
+	private void updateVocableNotes(String language, String word, String notes) throws DatabaseException {
 		String sql = "UPDATE " + TABLE_VOCABULARY + " SET notes = ? WHERE word = ? AND language = ?";
 		PreparedStatement ps = prepareStatement(sql);
-		ps.setString(1, notes);
-		ps.setString(2, word);
+		try {
+			ps.setString(1, notes);
+			ps.setString(2, word);
 		ps.setString(3, language);
 		ps.execute();
+		} catch (SQLException e) {
+			throw new DatabaseException(e);
+		}
 	}
 
 	@Override
-	public List<Vocable> query(String query) throws SQLException {
+	public List<Vocable> query(String query) throws DatabaseException {
 		ResultSet currentResult = select("SELECT language, word, notes FROM vocabulary WHERE "
 				+ "LOWER(word) LIKE LOWER('" + query + "%')");
 
 		ArrayList<Vocable> vocables = new ArrayList<>();
 
-		while (currentResult.next()) {
-			String language = currentResult.getString("language");
-			String word = currentResult.getString("word");
-			String notes = currentResult.getString("notes");
-			Vocable voc = new Vocable(language, word, notes);
-			vocables.add(voc);
+		try {
+			while (currentResult.next()) {
+				String language = currentResult.getString("language");
+				String word = currentResult.getString("word");
+				String notes = currentResult.getString("notes");
+				Vocable voc = new Vocable(language, word, notes);
+				vocables.add(voc);
+			}
+		} catch (SQLException e) {
+			throw new DatabaseException(e);
 		}
 		return vocables;
 	}
 
 	@Override
-	public List<Vocable> getConnectionsFor(Vocable vocable, String connectionTableName) throws SQLException{
+	public List<Vocable> getConnectionsFor(Vocable vocable, String connectionTableName) throws DatabaseException{
 		ArrayList<Vocable> vocables = new ArrayList<>();
 		
 		//		"LOWER(word) LIKE LOWER('" + query + "%')"
@@ -192,11 +211,15 @@ public class RygaDerbySQLDatabase extends DerbySQLDatabase implements Vocabulary
 		
 		ResultSet rs1 = select(query);
 		
-		while(rs1.next()) {
-			String word = rs1.getString("secondWord");
-			String language = rs1.getString("secondLang");
-			Vocable v = new Vocable(language, word, ""); //TODO: nicht fertig -- nur zum Testen
-			vocables.add(v);
+		try {
+			while(rs1.next()) {
+				String word = rs1.getString("secondWord");
+				String language = rs1.getString("secondLang");
+				Vocable v = new Vocable(language, word, ""); //TODO: nicht fertig -- nur zum Testen
+				vocables.add(v);
+			}
+		} catch (SQLException e) {
+			throw new DatabaseException(e);
 		}
 		
 		
@@ -242,24 +265,30 @@ public class RygaDerbySQLDatabase extends DerbySQLDatabase implements Vocabulary
 	}
 
 	@Override
-	public void addConnection(Vocable from, Vocable to, String connectionTableName) throws SQLException{
+	public void addConnection(Vocable from, Vocable to, String connectionTableName) throws DatabaseException{
 		String sql = "INSERT INTO " + connectionTableName + " VALUES (?, ?, ?, ?)";
-		PreparedStatement ps = prepareStatement(sql);
-		ps.setString(1, from.getWord());
-		ps.setString(2, from.getLanguage());
-		ps.setString(3, to.getWord()); //FIXME: null, wenn ueber Connection-Dialog
-		//eine neue Vokabel 'faul' erzeugt wird
-		ps.setString(4, to.getLanguage());
-		ps.execute();
+		
+		try {
+			PreparedStatement ps = prepareStatement(sql);
+			ps.setString(1, from.getWord());
+			ps.setString(2, from.getLanguage());
+			ps.setString(3, to.getWord()); //FIXME: null, wenn ueber Connection-Dialog
+			//eine neue Vokabel 'faul' erzeugt wird
+			ps.setString(4, to.getLanguage());
+			ps.execute();
+		} catch (SQLException e) {
+			throw new DatabaseException(e);
+		}
+		
 	}
 
 	@Override
-	public List<Vocable> getTranslations(Vocable vocable) throws SQLException {
+	public List<Vocable> getTranslations(Vocable vocable) throws DatabaseException {
 		return getConnectionsFor(vocable, TABLE_TRANSLATION);
 	}
 
 	@Override //TODO im Hintergrund bearbeiten und der Reihe nach einspeisen
-	public List<Connection> getAllConnectionsFor(Vocable vocable) throws SQLException {
+	public List<Connection> getAllConnectionsFor(Vocable vocable) throws DatabaseException {
 		List<Connection> connections = new ArrayList<>();
 		for(String tableName : getConnectionTableNames()) {
 			List<Vocable> vocables = getConnectionsFor(vocable, tableName);

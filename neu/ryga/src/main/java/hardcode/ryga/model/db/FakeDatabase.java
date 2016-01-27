@@ -7,15 +7,18 @@ import hardcode.ryga.model.domain.VocabularyLookup;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FakeDatabase implements Vocabulary, VocabularyLookup {
 	
-	private List<Vocable> vocables;
+	//private List<Vocable> vocables;
+	private Map<String, Vocable> vocables;
 
 	public FakeDatabase(String databaseName) throws SQLException {
 		super();
-		vocables = new ArrayList<>();
+		vocables = new HashMap<>();
 	}
 
 	@Override
@@ -24,23 +27,25 @@ public class FakeDatabase implements Vocabulary, VocabularyLookup {
 	}
 
 	@Override
-	public void addVocable(Vocable vocable) throws SQLException {
+	public void addVocable(Vocable vocable) throws DatabaseException {
 		// TODO Auto-generated method stub
-		System.out.println("Vokabel "+vocable.getWord()+" hinzugefügt");
-		vocables.add(vocable);
+		//System.out.println("Vokabel "+vocable.getWord()+" hinzugefügt");
+		//vocables.add(vocable);
+		vocables.put(vocable.getWord(), vocable);
 	}
 
 	@Override
-	public void updateVocable(Vocable vocable) throws SQLException {
+	public void updateVocable(Vocable vocable) throws DatabaseException {
 		// TODO Auto-generated method stub
-		
+		vocables.put(vocable.getWord(), vocable);		
 	}
 
 	@Override
-	public List<Vocable> query(String query) throws SQLException {
+	public List<Vocable> query(String query)  {
 		// TODO Auto-generated method stub
 		//return new ArrayList<>();
-		return vocables;
+		List<Vocable> list = new ArrayList<>(vocables.values());
+		return list;
 	}
 
 	@Override
@@ -57,34 +62,34 @@ public class FakeDatabase implements Vocabulary, VocabularyLookup {
 
 	@Override
 	public List<Vocable> getConnectionsFor(Vocable vocable,
-			String connectionTableName) throws SQLException {
+			String connectionTableName) throws DatabaseException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public List<Connection> getAllConnectionsFor(Vocable vocable)
-			throws SQLException {
+			throws DatabaseException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<Vocable> getTranslations(Vocable vocable) throws SQLException {
+	public List<Vocable> getTranslations(Vocable vocable) throws DatabaseException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void addConnectionTable(String connectionTableName)
-			throws SQLException {
+			throws DatabaseException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void addConnection(Vocable from, Vocable to,
-			String connectionTableName) throws SQLException {
+			String connectionTableName) throws DatabaseException {
 		// TODO Auto-generated method stub
 		
 	}

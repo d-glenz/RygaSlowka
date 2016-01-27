@@ -1,12 +1,12 @@
 package hardcode.ryga.view.gui;
 
 import hardcode.ryga.controller.S;
+import hardcode.ryga.model.db.DatabaseException;
 import hardcode.ryga.model.domain.Vocable;
 import hardcode.ryga.model.domain.VocabularyLookup;
 import hardcode.ryga.view.gui.listener.NewVocableListener;
 import hardcode.ryga.view.gui.listener.VocableSelectedListener;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,7 +88,7 @@ public class QueryList extends VBox {
 		// TODO: btnAddPl/De muessen nicht staendig entfern werden
 	}
 
-	public void query(String query) throws SQLException {
+	public void query(String query) throws DatabaseException {
 		if (query.isEmpty()) {
 			clear();
 			return;

@@ -10,6 +10,7 @@ import hardcode.ryga.view.ConnectionPane;
 import hardcode.ryga.view.gui.listener.NewVocableListener;
 import hardcode.ryga.view.gui.listener.VocableActionHandler;
 import hardcode.ryga.view.gui.listener.VocableSelectedListener;
+import hardcode.ryga.model.db.DatabaseException;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -107,7 +108,7 @@ public class GuiController {
 				public void onOk(Vocable vocable) {
 					try {
 						vocab.updateVocable(vocable);
-					} catch (SQLException e) {
+					} catch (DatabaseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -160,9 +161,9 @@ public class GuiController {
 	private void queryDB(String query) { // TODO: von hier weg
 		try {
 			queryList.query(query);
-		} catch (SQLException e) {
+		} catch (DatabaseException e) {
 			warningMessage("Could not select in databse.",
-					SQLDatabaseUtilities.prettifySQLException(e));
+					SQLDatabaseUtilities.prettifySQLException((SQLException)e.getCause())); //TODO: funktionierts?
 		}
 	}
 	
@@ -188,7 +189,7 @@ public class GuiController {
 		List<Vocable> translations = new ArrayList<>();
 		try {
 			translations = vocabulary.getTranslations(vocable);
-		} catch (SQLException e) {
+		} catch (DatabaseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -198,7 +199,7 @@ public class GuiController {
 		List<Connection> connections = new ArrayList<>();
 		try {
 			connections = vocabulary.getAllConnectionsFor(vocable);
-		} catch (SQLException e) {
+		} catch (DatabaseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -208,12 +209,18 @@ public class GuiController {
 	}
 	
 	private void insertIntoConnectionPane(List<Vocable> vocables, String connectionName) {
+		if (vocables == null) {
+			return;
+		}
 		for(Vocable v : vocables) {
 			insertIntoConnectionPane(v, connectionName);
 		}
 	}
 	
 	private void insertIntoConnectionPane(List<Connection> connections) {
+		if (connections == null) {
+			return;
+		}
 		for(Connection c : connections) {
 			insertIntoConnectionPane(c.getVocable(), c.getConnectionName());
 		}
@@ -247,7 +254,7 @@ public class GuiController {
 			public void onOk(Vocable vocable) {
 				try {
 					vocabulary.addVocable(vocable);
-				} catch (SQLException e) {
+				} catch (DatabaseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
