@@ -3,11 +3,11 @@ package hardcode.ryga.controller;
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
 
-import javafx.event.EventHandler;
+import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
 
 import org.apache.commons.collections15.Transformer;
 
@@ -27,23 +27,28 @@ public class JungController extends FXVisualizationViewer<String, Integer> {
       Graph<String, Integer> graph = layout.getGraph();
       Point2D start = layout.transform(graph.getSource(e));
       Point2D end = layout.transform(graph.getDest(e));
-      Line l = new Line(start.getX(), start.getY(), end.getX(), end.getY());
-      // l.startXProperty().bind(); //TODO //FIXME
-      rc.getPane().getChildren().add(l);
+      rc.getPane().getChildren()
+          .add(new Line(start.getX(), start.getY(), end.getX(), end.getY()));
     }
   }
 
+  /**
+   * Note: Mouse movement in current setup not possible.
+   * 
+   * @author Dominik Glenz
+   *
+   */
   private final class VertexToNodeTransformer implements
       Transformer<String, Node> {
     public Node transform(String input) {
       Circle rect = new Circle(0, 0, 5);
-      rect.setOnMouseDragged(new EventHandler<MouseEvent>() {
-        public void handle(MouseEvent event) {
-          rect.setCenterX(event.getX());
-          rect.setCenterY(event.getY());
-        }
-      });
-      return rect;
+      Text text = new Text(0, 15, input);
+      Group group = new Group();
+
+      group.getChildren().add(rect);
+      group.getChildren().add(text);
+
+      return group;
     }
   }
 

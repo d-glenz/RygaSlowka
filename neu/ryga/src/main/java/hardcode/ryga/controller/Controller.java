@@ -23,7 +23,6 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.visulytic.jungfx.visualization.FXVisualizationViewer;
 
-import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
 //import edu.uci.ics.jung.graph.Graph;
@@ -55,7 +54,13 @@ public class Controller {
       jungGraph = new DirectedSparseGraph<String, Integer>();
       jungGraph.addVertex("A");
       jungGraph.addVertex("B");
+      jungGraph.addVertex("C");
+      jungGraph.addVertex("D");
+      jungGraph.addVertex("E");
       jungGraph.addEdge(1, "A", "B");
+      jungGraph.addEdge(2, "A", "C");
+      jungGraph.addEdge(3, "A", "D");
+      jungGraph.addEdge(4, "B", "E");
 
       FXVisualizationViewer<String, Integer> jung = new JungController(
           jungGraph, new Dimension(300, 300));
